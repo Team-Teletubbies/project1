@@ -12,3 +12,171 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum MemberStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  password     String
+  profileImage String?
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  projects    Project[]    @relation("UserProjects")
+  tasks       Task[]       @relation("AssignedTasks")
+  members     Member[]
+  comments    Comment[]
+  invitations Invitation[] @relation("Inviter")
+  reminders   Reminder[]
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  creatorId   Int
+  name        String
+  description String
+  startYear   Int
+  startMonth  Int
+  startDay    Int
+  endYear     Int
+  endMonth    Int
+  endDay      Int
+  status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator     User         @relation("UserProjects", fields: [creatorId], references: [id])
+  members     Member[]
+  tasks       Task[]
+  invitations Invitation[]
+}
+
+model Member {
+  userId       Int
+  projectId    Int
+  role         Role
+  memberStatus MemberStatus
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
+
+  @@id([userId, projectId])
+}
+
+model Invitation {
+  id           Int      @id @default(autoincrement())
+  projectId    Int
+  inviterId    Int
+  invitedEmail String
+  code         String
+  isAccepted   Boolean
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  project Project @relation(fields: [projectId], references: [id])
+  inviter User    @relation("Inviter", fields: [inviterId], references: [id])
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  projectId   Int
+  assigneeId  Int
+  title       String
+  description String
+  status      TaskStatus
+  endsAt      DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  project     Project      @relation(fields: [projectId], references: [id])
+  assignee    User         @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  subtasks    SubTask[]
+  comments    Comment[]
+  attachments Attachment[]
+  reminders   Reminder[]
+  taskTags    TaskTag[]
+}
+
+model SubTask {
+  id        Int        @id @default(autoincrement())
+  taskId    Int
+  title     String
+  status    TaskStatus
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  userId    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taskTags TaskTag[]
+}
+
+model TaskTag {
+  taskId Int
+  tagId  Int
+
+  task Task @relation(fields: [taskId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId])
+}
+
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+}
+
+model Reminder {
+  id         Int      @id @default(autoincrement())
+  taskId     Int
+  userId     Int
+  remindTime DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
