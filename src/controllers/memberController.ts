@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { sendEmail } from '../services/memberService';
+import { inviteMember } from '../services/memberService';
 
 export const sendInvitationEmail = async (
   req: Request,
@@ -7,15 +7,15 @@ export const sendInvitationEmail = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { from, to, subject, text } = req.body;
-    const data = { from, to, subject, text };
+    const { email, projectId, inviterId } = req.body;
+    const data = { email, projectId };
     if (!data) {
       res.status(400).json({ message: '모든 필들를 입력해 주세요' });
       return;
     }
 
-    await sendEmail(data);
-    res.status(200).json({ message: '이메일 전송 성공' });
+    await inviteMember(email, projectId, inviterId);
+    res.status(200).json({ message: '초대 메일이 성공적으로 전송되었습니다.' });
   } catch (err) {
     next(err);
   }

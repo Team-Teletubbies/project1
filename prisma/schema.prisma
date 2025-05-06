@@ -88,7 +88,7 @@ model Invitation {
   projectId    Int
   inviterId    Int
   invitedEmail String
-  code         String
+  token        String   @unique
   isAccepted   Boolean
   createdAt    DateTime @default(now())
   expiresAt    DateTime
