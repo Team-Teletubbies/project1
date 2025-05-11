@@ -1,0 +1,19 @@
+export interface userType {
+  email: string;
+  password: string;
+  name: string;
+  profileImage?: string;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  profileImage: string | null;
+  refreshToken: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type userCrateDataType = Omit<User, 'password' | 'refreshToken'>;
