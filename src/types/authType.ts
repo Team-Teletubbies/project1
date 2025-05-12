@@ -17,3 +17,5 @@ export interface User {
 }
 
 export type userCrateDataType = Omit<User, 'password' | 'refreshToken'>;
+
+export type userLoginType = Pick<User, 'email' | 'password'>;
