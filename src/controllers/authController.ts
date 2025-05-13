@@ -13,7 +13,6 @@ export const createUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const user = create(req.body, loginBodyStruct);
-  console.log('범인은 너다');
   const result = await loginUserService(user);
 
   res.status(200).json(result);
