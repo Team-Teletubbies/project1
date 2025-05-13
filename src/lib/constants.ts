@@ -14,4 +14,4 @@ export const MAIL_PORT = getEnv('MAIL_PORT');
 export const MAIL_USER = getEnv('MAIL_USER');
 export const MAIL_PASS = getEnv('MAIL_PASS');
 
-export const { PORT } = process.env;
+export const PORT = process.env.PORT || 3000;
