@@ -1,11 +1,11 @@
 import { prisma } from '../lib/prisma';
-import { User, userType } from '../types/authType';
+import { User, userInput } from '../types/authType';
 
-export const emailMatch = async (email: string): Promise<User | null> => {
+export const matchEmail = async (email: string): Promise<User | null> => {
   return prisma.user.findUnique({ where: { email } });
 };
 
-export const createUserRepositroy = async (users: userType): Promise<User> => {
+export const createUserRepositroy = async (users: userInput): Promise<User> => {
   return prisma.user.create({ data: users });
 };
 

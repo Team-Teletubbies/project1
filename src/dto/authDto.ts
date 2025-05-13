@@ -1,4 +1,4 @@
-import { userCrateDataType } from '../types/authType';
+import { userCreateDataType } from '../types/authType';
 
 export class createUserResponseDTO {
   id: number;
@@ -8,7 +8,7 @@ export class createUserResponseDTO {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(users: userCrateDataType) {
+  constructor(users: userCreateDataType) {
     this.id = users.id;
     this.email = users.email;
     this.name = users.name;

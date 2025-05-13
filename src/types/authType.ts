@@ -1,4 +1,4 @@
-export interface userType {
+export interface userInput {
   email: string;
   password: string;
   name: string;
@@ -16,6 +16,6 @@ export interface User {
   updatedAt: Date;
 }
 
-export type userCrateDataType = Omit<User, 'password' | 'refreshToken'>;
+export type userCreateDataType = Omit<User, 'password' | 'refreshToken'>;
 
 export type userLoginType = Pick<User, 'email' | 'password'>;

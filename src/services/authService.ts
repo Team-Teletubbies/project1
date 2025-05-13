@@ -1,16 +1,16 @@
 import { hashPassword } from '../lib/auth/hash';
 import BadRequestError from '../lib/errors/badRequestError';
-import { createUserRepositroy, emailMatch, saveRefreshToken } from '../repositories/authrepository';
-import { userType, userLoginType } from '../types/authType';
+import { createUserRepositroy, matchEmail, saveRefreshToken } from '../repositories/authrepository';
+import { userLoginType, userInput } from '../types/authType';
 import { createUserResponseDTO, LoginUserResponsDTO } from '../dto/authDto';
 import NotFoundError from '../lib/errors/notFoundError';
 import bcrypt from 'bcrypt';
 import { createToken } from '../lib/auth/jwt';
 
-export const createUserService = async (user: userType) => {
+export const createUserService = async (user: userInput) => {
   const { email, password, ...rest } = user;
 
-  const existingEmail = await emailMatch(email);
+  const existingEmail = await matchEmail(email);
 
   if (existingEmail) {
     throw new BadRequestError('이미 존재하는 이메일입니다.');
@@ -18,7 +18,7 @@ export const createUserService = async (user: userType) => {
 
   const hashedPassword = await hashPassword(password);
 
-  const users: userType = {
+  const users: userInput = {
     email,
     password: hashedPassword,
     ...rest,
@@ -32,7 +32,7 @@ export const createUserService = async (user: userType) => {
 export const loginUserService = async (user: userLoginType) => {
   const { email, password } = user;
 
-  const existingEmail = await emailMatch(email);
+  const existingEmail = await matchEmail(email);
 
   if (!existingEmail) {
     throw new NotFoundError('존재하지 않거나 비밀번호가 일치하지 않습니다');
