@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ debug: true, path: '.env' });
 
 function getEnv(key: string): string {
   const value = process.env[key];
@@ -13,3 +13,5 @@ export const MAIL_HOST = getEnv('MAIL_HOST');
 export const MAIL_PORT = getEnv('MAIL_PORT');
 export const MAIL_USER = getEnv('MAIL_USER');
 export const MAIL_PASS = getEnv('MAIL_PASS');
+
+export const { PORT } = process.env;
