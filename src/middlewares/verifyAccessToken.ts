@@ -1,8 +1,9 @@
 import { expressjwt } from 'express-jwt';
 import { Secret } from 'jsonwebtoken';
+import { jwtSecret } from '../config';
 
 export const verifyAccessToken = expressjwt({
-  secret: process.env.JWT_SECRET as Secret,
+  secret: jwtSecret as Secret,
   algorithms: ['HS256'],
   requestProperty: 'user',
   getToken: (req) => {
