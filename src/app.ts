@@ -7,6 +7,7 @@ import { PORT } from './lib/constants';
 const app: express.Application = express();
 app.use(express.json());
 
+
 app.use('/auth', authRouter);
 app.use('/email', memberRouter);
 
