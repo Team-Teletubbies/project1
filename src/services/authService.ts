@@ -2,7 +2,7 @@ import { hashPassword } from '../lib/auth/hash';
 import BadRequestError from '../lib/errors/badRequestError';
 import { createUserRepositroy, matchEmail, saveRefreshToken } from '../repositories/authrepository';
 import { userLoginType, userInput } from '../types/authType';
-import { createUserResponseDTO, LoginUserResponsDTO } from '../dto/authDto';
+import { createUserResponseDTO, tokenResponsDTO } from '../dto/authDto';
 import NotFoundError from '../lib/errors/notFoundError';
 import bcrypt from 'bcrypt';
 import { createToken } from '../lib/auth/jwt';
@@ -48,7 +48,7 @@ export const loginUserService = async (user: userLoginType) => {
 
   const tokens = await createTokens(userId);
 
-  return new LoginUserResponsDTO(tokens);
+  return new tokenResponsDTO(tokens);
 };
 
 const createTokens = async (
@@ -59,4 +59,12 @@ const createTokens = async (
   await saveRefreshToken(refreshToken, userId);
 
   return { accessToken, refreshToken };
+};
+
+export const refreshToken = async (
+  id: number,
+): Promise<{ accessToken: string; refreshToken: string }> => {
+  const tokens = await createTokens(id);
+
+  return new tokenResponsDTO(tokens);
 };

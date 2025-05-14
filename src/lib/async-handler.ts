@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-export function asyncHandler(
-  handler: (req: Request, res: Response, next: NextFunction) => Promise<void>,
+export function asyncHandler<TReq extends Request = Request>(
+  handler: (req: TReq, res: Response, next: NextFunction) => Promise<void>,
 ): RequestHandler {
   return async function (req: Request, res: Response, next: NextFunction) {
     try {
-      await handler(req, res, next);
+      await handler(req as TReq, res, next);
     } catch (e) {
       next(e);
     }

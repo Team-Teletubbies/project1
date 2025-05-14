@@ -3,6 +3,7 @@ import BadRequestError from '../lib/errors/badRequestError';
 import UnauthorizedError from '../lib/errors/unauthorizedError';
 import NotFoundError from '../lib/errors/notFoundError';
 import { Request, Response, NextFunction } from 'express';
+import { UnauthorizedError as JwtUnauthorizedError } from 'express-jwt';
 
 export function defaultNotFoundHandler(req: Request, res: Response, next: NextFunction): void {
   res.status(404).send({ message: 'Not found' });
@@ -16,6 +17,19 @@ export function globalErrorHandler(
 ): void {
   if (res.headersSent) {
     return next(err);
+  }
+
+  if (err instanceof JwtUnauthorizedError) {
+    if (err.code === 'invalid_token') {
+      res.status(401).json({ message: '유효하지 않은 토큰입니다.' });
+      return;
+    }
+    if (err.message === 'jwt expired') {
+      res.status(401).json({ message: '토큰이 만료되었습니다.' });
+      return;
+    }
+    res.status(401).json({ message: '인증 오류입니다.' });
+    return;
   }
 
   if (err instanceof StructError || err instanceof BadRequestError) {

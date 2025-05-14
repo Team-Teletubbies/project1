@@ -18,7 +18,7 @@ export class createUserResponseDTO {
   }
 }
 
-export class LoginUserResponsDTO {
+export class tokenResponsDTO {
   accessToken: string;
   refreshToken: string;
 
