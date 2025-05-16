@@ -3,6 +3,7 @@ import { CreateSubtaskDTO, SubtaskResponseDTO } from '../dto/subtask';
 import UnauthorizedError from '../lib/errors/unauthorizedError';
 import { createSubtaskInput } from '../types/subtask';
 import { create } from '../repositories/subtask';
+import * as memberRepository from '../repositories/memberRepository';
 
 export const createSubtask = async (dto: CreateSubtaskDTO): Promise<SubtaskResponseDTO> => {
   const { userId, taskId, title } = dto;
@@ -16,7 +17,6 @@ export const createSubtask = async (dto: CreateSubtaskDTO): Promise<SubtaskRespo
 };
 
 const isProjectMember = async (userId: number, taskId: number): Promise<Boolean> => {
-  // 정은 Todo : memberRepository에 해당 함수 만들기
   // 정은 ? : 이거 자주 쓰인다면 미들웨어로 빼버리는게 나을까요?
   const member = await memberRepository.findByUserAndTask(userId, taskId);
   if (!member) {
