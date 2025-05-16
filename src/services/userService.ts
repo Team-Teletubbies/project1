@@ -1,9 +1,18 @@
-import { info, updateUserWithPassword } from '../repositories/userRepository';
+import {
+  info,
+  updateUserWithPassword,
+  myProject,
+  totalProject,
+  projectData,
+  findTaskWithFilters,
+} from '../repositories/userRepository';
 import { getUserDTO, patchUserDTO } from '../dto/authDto';
 import NotFoundError from '../lib/errors/notFoundError';
-import { UpdateUserDataType } from '../types/userType';
+import { UpdateUserDataType, UserPageParams, TaskFilterParams } from '../types/userType';
 import { comparePassword, hashPassword } from '../lib/auth/hash';
 import BadRequestError from '../lib/errors/badRequestError';
+import dayjs from 'dayjs';
+import { UserTaskResponseDTO } from '../dto/userDto';
 
 export const infoUser = async (userId: number) => {
   const user = await info(userId);
@@ -45,4 +54,60 @@ const isPasswordUpdate = (
   data: UpdateUserDataType,
 ): data is UpdateUserDataType & { currentPassword: string; newPassword: string } => {
   return 'currentPassword' in data && 'newPassword' in data;
+};
+
+export const userProject = async (userId: number, params: UserPageParams) => {
+  const projects = await myProject(userId, params);
+
+  const data = projects.map((project) => {
+    const todoCount = project.tasks.filter((task) => task.status === 'TODO').length;
+    const inProgressCount = project.tasks.filter((task) => task.status === 'IN_PROGRESS').length;
+    const doneCount = project.tasks.filter((task) => task.status === 'DONE').length;
+
+    return {
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      memberCount: project.members.length,
+      todoCount,
+      inProgressCount,
+      doneCount,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+    };
+  });
+
+  const total = await totalProject(userId);
+
+  return { data, total };
+};
+
+export const userTask = async (userId: number, params: TaskFilterParams) => {
+  const projects = await projectData(userId);
+
+  if (projects.length === 0) {
+    return [];
+  }
+
+  const tasks = await findTaskWithFilters(projects, params);
+  const from = params.from ? dayjs(params.from) : null;
+  const to = params.to ? dayjs(params.to) : null;
+  const filtered = tasks.filter((task) => {
+    const projectStart = dayjs()
+      .year(task.project.startYear)
+      .month(task.project.startMonth - 1)
+      .date(task.project.startDay);
+
+    const projectEnd = dayjs()
+      .year(task.project.endYear)
+      .month(task.project.endMonth - 1)
+      .date(task.project.endDay);
+
+    if (from && projectStart.isBefore(from)) return false;
+    if (to && projectEnd.isAfter(to)) return false;
+
+    return true;
+  });
+
+  return filtered.map((task) => new UserTaskResponseDTO(task));
 };
