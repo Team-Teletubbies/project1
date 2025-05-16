@@ -18,6 +18,9 @@ export class createUserResponseDTO {
   }
 }
 
+export class getUserDTO extends createUserResponseDTO {}
+export class patchUserDTO extends createUserResponseDTO {}
+
 export class tokenResponsDTO {
   accessToken: string;
   refreshToken: string;

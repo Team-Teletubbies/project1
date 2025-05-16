@@ -1,4 +1,15 @@
-import { define, nonempty, refine, size, string, object, optional, nullable } from 'superstruct';
+import {
+  define,
+  nonempty,
+  refine,
+  size,
+  string,
+  object,
+  optional,
+  nullable,
+  union,
+  intersection,
+} from 'superstruct';
 
 const Email = define<string>(
   'Email',
@@ -33,10 +44,19 @@ export const tokenResonesStruct = object({
   refreshToken: string(),
 });
 
-export const updateUserBodyStruct = object({
+const userInfoStruct = object({
   email: optional(Email),
   name: optional(size(nonempty(string()), 1, 10)),
-  currentPassword: Password,
-  newPassword: optional(Password),
   profileImage: optional(nullable(ImageExtensionStruct)),
 });
+
+const passwordUpdateStruct = object({
+  currentPassword: Password,
+  newPassword: Password,
+});
+
+export const updateUserBodyStruct = union([
+  userInfoStruct,
+  passwordUpdateStruct,
+  intersection([userInfoStruct, passwordUpdateStruct]),
+]);
