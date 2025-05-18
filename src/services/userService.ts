@@ -13,7 +13,7 @@ export const infoUser = async (userId: number) => {
   return new getUserDTO(user);
 };
 
-export const pathUser = async (userData: UpdateUserDataType) => {
+export const patchUser = async (userData: UpdateUserDataType) => {
   const user = await info(userData.id);
   if (!user) {
     throw new NotFoundError('존재하지 않는 유저입니다.');
