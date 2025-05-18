@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../types/express';
-import { infoUser, pathUser } from '../services/userService';
+import { infoUser, patchUser } from '../services/userService';
 import { updateUserBodyStruct } from '../structs/userStruct';
 import { create } from 'superstruct';
 import { UpdateUserDataType } from '../types/userType';
@@ -23,7 +23,7 @@ export const patchMe = async (req: AuthenticatedRequest, res: Response) => {
     ...data,
   };
 
-  const result = await pathUser(userData);
+  const result = await patchUser(userData);
   res.status(200).json(result);
   return;
 };
